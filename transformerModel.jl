@@ -1,3 +1,8 @@
+# colab stuff
+using IJulia
+notebook(detached=true)
+
+# for local use AMD : ENV["KNET_GPU"] = "vulkan"
 using Knet
 
 # Define the architecture
@@ -8,7 +13,7 @@ struct Transformer
 end
 
 # Initialize the model parameters
-function Transformer(input_size, hidden_size, num_heads)
+function Transformer(input_size::Int, hidden_size::Int, num_heads::Int)
     Wq = param(hidden_size, input_size)
     Wk = param(hidden_size, input_size)
     Wv = param(hidden_size, input_size)
@@ -49,6 +54,7 @@ end
 
 # Training the model
 function train(model, data, labels)
+    optimizer = optimizers(model, Adagrad)
     for (x, y) in zip(data, labels)
         # Compute the loss
         y_pred = model(x)
@@ -56,7 +62,7 @@ function train(model, data, labels)
 
         # Update the model parameters
         grads = grad(loss, params(model))
-        update!(model, grads, optimizer)
+        update!(optimizer, grads)
     end
 end
 
